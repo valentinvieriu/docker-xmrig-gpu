@@ -1,0 +1,32 @@
+version: '2.2'
+volumes:
+  nvidia_driver_384.59:
+    external:
+      name: nvidia_driver_384.59
+services:
+  xmrig:
+    build: .
+    image: valentinvieriu/xmrig-gpu:v2.4.2
+    # entrypoint: "/bin/sh -c"
+    command: " \
+    --algo=${POOL_ALGO} \
+    --url=${POOL_ADDRESS} \
+    --userpass=${POOL_USER}:${POOL_PASSWORD} \
+    --api-port=${PORT} \
+    \
+    "
+    ports: 
+      - 9998:9998
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: unless-stopped
+    devices: 
+      - '/dev/nvidia0:/dev/nvidia0'
+      - '/dev/nvidiactl:/dev/nvidiactl'
+      - '/dev/nvidia-uvm:/dev/nvidia-uvm'
+      - '/dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools'
+    # entrypoint: "/bin/bash -c"
+    volumes:
+      - 'nvidia_driver_384.59:/usr/local/nvidia:ro'
